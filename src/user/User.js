@@ -21,6 +21,15 @@ const UserSchema = new mongoose.Schema({
     minlength: 6,
     //select: false,
   },
+
+  inactive: {
+    type: Boolean,
+    default: true,
+  },
+
+  activationToken: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model('User', UserSchema);
