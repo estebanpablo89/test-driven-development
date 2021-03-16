@@ -1,7 +1,9 @@
 const request = require('supertest');
+const { post } = require('../src/app');
 const app = require('../src/app');
 //const connectDB = require('../config/database');
 const User = require('../src/user/User');
+const nodemailerStub = require('nodemailer-stub');
 
 beforeAll(() => {
   // connectDB();
@@ -155,5 +157,13 @@ describe('User registration', () => {
     await postUser();
     const savedUser = await User.findOne();
     expect(savedUser.activationToken).toBeTruthy();
+  });
+
+  it('sends an account activation email with activation token', async () => {
+    await postUser();
+    const lastMail = nodemailerStub.interactsWithMail.lastMail();
+    expect(lastMail.to[0]).toBe('user1@email.com');
+    const savedUser = await User.findOne();
+    expect(lastMail.content).toContain(savedUser.activationToken);
   });
 });
