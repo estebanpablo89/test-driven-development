@@ -18,21 +18,6 @@ const save = async (body) => {
   };
   await User.create(user);
   await EmailService.sendAccountActivation(email, user.activationToken);
-
-  //   bcrypt.hash(req.body.password, 10).then(async (hash) => {
-  //     const user = { ...req.body, password: hash };
-
-  //     //const user = Object.assign({}, req.body, { password: hash });
-
-  //     // const user = {
-  //     //   username: req.body.username,
-  //     //   email: req.body.email,
-  //     //   password: hash,
-  //     // };
-
-  //     await User.create(user);
-  //     res.send({ message: 'User created' });
-  //   });
 };
 
 const findByEmail = async (email) => {

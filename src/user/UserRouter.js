@@ -68,9 +68,12 @@ router.post(
       //const response = { validationErrors: { ...req.validationErrors } };
       return res.status(400).send({ validationErrors });
     }
-
-    await UserService.save(req.body);
-    res.send({ message: 'User created' });
+    try {
+      await UserService.save(req.body);
+      res.send({ message: 'User created' });
+    } catch (error) {
+      return res.status(502).send({ message: 'Email failure' });
+    }
   }
 );
 
