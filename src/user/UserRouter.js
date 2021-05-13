@@ -5,27 +5,6 @@ const User = require('./User');
 
 const UserService = require('./UserService');
 
-// const validateUsername = (req, res, next) => {
-//   const user = req.body;
-//   if (user.username === null) {
-//     req.validationErrors = {
-//       username: 'Username cannot be null',
-//     };
-//   }
-//   next();
-// };
-
-// const validateEmail = (req, res, next) => {
-//   const user = req.body;
-//   if (user.email === null) {
-//     req.validationErrors = {
-//       ...req.validationErrors,
-//       email: 'Email cannot be null',
-//     };
-//   }
-//   next();
-// };
-
 router.post(
   '/api/1.0/users',
   check('username')
@@ -76,5 +55,17 @@ router.post(
     }
   }
 );
+
+router.post('/api/1.0/users/token/:token', async (req, res) => {
+  const token = req.params.token;
+  try {
+    await UserService.activate(token);
+  } catch (err) {
+    return res.status(400).send({
+      message: 'This account is either active or the token is invalid',
+    });
+  }
+  res.send({ message: 'Account is activated' });
+});
 
 module.exports = router;

@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "tdd with express",
   "main": "app.js",
-  "jest": {
-    "verbose": true,
-    "testEnvironment": "node"
-  },
   "scripts": {
     "start": "cross-env NODE_ENV=development nodemon index",
     "test": "cross-env NODE_ENV=test jest --watch --detectOpenHandles",

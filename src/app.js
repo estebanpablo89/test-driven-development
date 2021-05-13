@@ -10,6 +10,4 @@ app.use(express.json());
 
 app.use(UserRouter);
 
-//console.log(`env variable: ${process.env.NODE_ENV}`);
-
 module.exports = app;

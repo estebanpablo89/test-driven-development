@@ -6,9 +6,7 @@ const User = require('../src/user/User');
 const nodemailerStub = require('nodemailer-stub');
 const EmailService = require('../src/email/EmailService');
 
-beforeAll(() => {
-  // connectDB();
-});
+beforeAll(() => {});
 
 beforeEach(async () => {
   await User.deleteMany();
@@ -27,13 +25,11 @@ describe('User registration', () => {
   it('returns 200 OK when signup request is valid', async () => {
     const response = await postUser();
     expect(response.status).toBe(200);
-    //.expect(200, done);
   });
 
   it('returns success message when signup request is valid', async () => {
     const response = await postUser();
     expect(response.body.message).toBe('User created');
-    //.expect(200, done);
   });
 
   it('saves the user to database', async () => {
@@ -47,15 +43,6 @@ describe('User registration', () => {
     const user = await User.findOne();
     expect(user.username).toBe('user1');
     expect(user.email).toBe('user1@email.com');
-
-    // postUser().then(() => {
-    //   // query user table
-    //   User.findOne({}, (err, user) => {
-    //     expect(user.username).toBe('user1');
-    //     expect(user.email).toBe('user1@email.com');
-    //     done();
-    //   });
-    // });
   });
 
   it('hashes the password in database', async () => {
@@ -185,15 +172,74 @@ describe('User registration', () => {
     mockSendAccountActivation.mockRestore();
     expect(response.body.message).toBe('Email failure');
   });
+});
 
-  // Cannot do it because uses transaction
-  // it('does not save user to database if activation fails', async () => {
-  //   const mockSendAccountActivation = jest
-  //     .spyOn(EmailService, 'sendAccountActivation')
-  //     .mockRejectedValue({ message: 'Failed to deliver email' });
-  //   await postUser();
-  //   mockSendAccountActivation.mockRestore();
-  //   const savedUsers = await User.find();
-  //   expect(savedUsers.length).toBe(0);
-  // });
+describe('Account activation', () => {
+  it('activates the account when correct token is sent', async () => {
+    await postUser();
+    let savedUser = await User.findOne();
+    const token = savedUser.activationToken;
+
+    await request(app)
+      .post('/api/1.0/users/token/' + token)
+      .send();
+    savedUser = await User.findOne();
+    expect(savedUser.inactive).toBe(false);
+  });
+
+  it('removes the token from user table after successful activation', async () => {
+    await postUser();
+    let savedUser = await User.findOne();
+    const token = savedUser.activationToken;
+
+    await request(app)
+      .post('/api/1.0/users/token/' + token)
+      .send();
+    savedUser = await User.findOne();
+    expect(savedUser.activationToken).toBeFalsy();
+  });
+
+  it('does not activate account when token is wrong', async () => {
+    await postUser();
+    const token = 'invalid-token';
+
+    await request(app)
+      .post('/api/1.0/users/token/' + token)
+      .send();
+    const savedUser = await User.findOne();
+    expect(savedUser.inactive).toBe(true);
+  });
+
+  it('returns bad request when token is wrong', async () => {
+    await postUser();
+    const token = 'invalid-token';
+
+    const response = await request(app)
+      .post('/api/1.0/users/token/' + token)
+      .send();
+    expect(response.status).toBe(400);
+  });
+
+  it('returns message when wrong token is sent', async () => {
+    await postUser();
+    const token = 'invalid-token';
+
+    const response = await request(app)
+      .post('/api/1.0/users/token/' + token)
+      .send();
+    expect(response.body.message).toBe(
+      'This account is either active or the token is invalid'
+    );
+  });
+
+  it('returns successful message when correct token is sent', async () => {
+    await postUser();
+    let savedUser = await User.findOne();
+    const token = savedUser.activationToken;
+
+    const response = await request(app)
+      .post('/api/1.0/users/token/' + token)
+      .send();
+    expect(response.body.message).toBe('Account is activated');
+  });
 });
