@@ -25,15 +25,19 @@ const findByEmail = async (email) => {
 };
 
 const getUsers = async () => {
+  const pageSize = 10;
   const users = await User.find()
     .select('id username email')
-    .limit(10)
+    .limit(pageSize)
     .where({ inactive: false });
+
+  const count = await User.find().where({ inactive: false }).count();
+
   return {
     content: users,
     page: 0,
     size: 10,
-    totalPages: 0,
+    totalPages: Math.ceil(count / pageSize),
   };
 };
 
