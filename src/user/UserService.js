@@ -24,6 +24,15 @@ const findByEmail = async (email) => {
   return await User.findOne({ email });
 };
 
+const getUsers = async () => {
+  return {
+    content: [],
+    page: 0,
+    size: 10,
+    totalPages: 0,
+  };
+};
+
 const activate = async (token) => {
   const user = await User.findOne({ activationToken: token });
   if (!user) {
@@ -34,4 +43,4 @@ const activate = async (token) => {
   await user.save();
 };
 
-module.exports = { save, findByEmail, activate };
+module.exports = { save, findByEmail, activate, getUsers };

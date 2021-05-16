@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
+const { resource } = require('../app');
 const User = require('./User');
 
 const UserService = require('./UserService');
@@ -44,7 +45,6 @@ router.post(
       errors
         .array()
         .forEach((error) => (validationErrors[error.param] = error.msg));
-      //const response = { validationErrors: { ...req.validationErrors } };
       return res.status(400).send({ validationErrors });
     }
     try {
@@ -66,6 +66,11 @@ router.post('/api/1.0/users/token/:token', async (req, res) => {
     });
   }
   res.send({ message: 'Account is activated' });
+});
+
+router.get('/api/1.0/users', async (req, res) => {
+  const users = await UserService.getUsers();
+  res.send(users);
 });
 
 module.exports = router;

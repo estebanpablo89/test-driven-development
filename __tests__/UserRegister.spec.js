@@ -1,12 +1,8 @@
 const request = require('supertest');
-const { post } = require('../src/app');
 const app = require('../src/app');
-//const connectDB = require('../config/database');
 const User = require('../src/user/User');
 const nodemailerStub = require('nodemailer-stub');
 const EmailService = require('../src/email/EmailService');
-
-beforeAll(() => {});
 
 beforeEach(async () => {
   await User.deleteMany();
