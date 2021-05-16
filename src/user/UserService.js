@@ -25,8 +25,12 @@ const findByEmail = async (email) => {
 };
 
 const getUsers = async () => {
+  const users = await User.find()
+    .select('id username email')
+    .limit(10)
+    .where({ inactive: false });
   return {
-    content: [],
+    content: users,
     page: 0,
     size: 10,
     totalPages: 0,
