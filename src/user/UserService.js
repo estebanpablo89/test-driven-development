@@ -24,24 +24,6 @@ const findByEmail = async (email) => {
   return await User.findOne({ email });
 };
 
-const getUsers = async (page) => {
-  const pageSize = 10;
-  const users = await User.find()
-    .select('id username email')
-    .limit(pageSize)
-    .where({ inactive: false })
-    .skip(page * pageSize);
-
-  const count = await User.find().countDocuments({ inactive: false });
-
-  return {
-    content: users,
-    page,
-    size: 10,
-    totalPages: Math.ceil(count / pageSize),
-  };
-};
-
 const activate = async (token) => {
   const user = await User.findOne({ activationToken: token });
   if (!user) {
@@ -50,6 +32,23 @@ const activate = async (token) => {
   user.inactive = false;
   user.activationToken = null;
   await user.save();
+};
+
+const getUsers = async (page, size) => {
+  const users = await User.find()
+    .select('id username email')
+    .limit(size)
+    .where({ inactive: false })
+    .skip(page * size);
+
+  const count = await User.find().countDocuments({ inactive: false });
+
+  return {
+    content: users,
+    page,
+    size,
+    totalPages: Math.ceil(count / size),
+  };
 };
 
 module.exports = { save, findByEmail, activate, getUsers };
