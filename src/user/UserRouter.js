@@ -6,6 +6,7 @@ const User = require('./User');
 const pagination = require('../middleware/pagination');
 
 const UserService = require('./UserService');
+const UserNotFoundException = require('./UserNotFoundException');
 
 router.post(
   '/api/1.0/users',
@@ -78,6 +79,15 @@ router.get('/api/1.0/users', pagination, async (req, res) => {
 router.get('/api/1.0/users/all', async (req, res) => {
   const users = await UserService.getAllUsers();
   res.send(users);
+});
+
+router.get('/api/1.0/users/:id', async (req, res, next) => {
+  try {
+    const user = await UserService.getUser(req.params.id);
+    res.send(user);
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;

@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const User = require('./User');
 const crypto = require('crypto');
 const EmailService = require('../email/EmailService');
+const UserNotFoundException = require('./UserNotFoundException');
 
 const generateToken = (length) => {
   return crypto.randomBytes(length).toString('hex').substring(0, length);
@@ -58,4 +59,25 @@ const getAllUsers = async () => {
   };
 };
 
-module.exports = { save, findByEmail, activate, getUsers, getAllUsers };
+const getUser = async (id) => {
+  try {
+    const user = await User.findOne({ _id: id, inactive: false }).select(
+      'id username email'
+    );
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+    return user;
+  } catch (error) {
+    throw new UserNotFoundException();
+  }
+};
+
+module.exports = {
+  save,
+  findByEmail,
+  activate,
+  getUsers,
+  getAllUsers,
+  getUser,
+};
