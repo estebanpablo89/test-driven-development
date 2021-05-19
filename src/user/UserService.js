@@ -40,7 +40,6 @@ const getUsers = async (page, size) => {
     .limit(size)
     .where({ inactive: false })
     .skip(page * size);
-
   const count = await User.find().countDocuments({ inactive: false });
 
   return {
@@ -51,4 +50,12 @@ const getUsers = async (page, size) => {
   };
 };
 
-module.exports = { save, findByEmail, activate, getUsers };
+const getAllUsers = async () => {
+  const users = await User.find();
+
+  return {
+    content: users,
+  };
+};
+
+module.exports = { save, findByEmail, activate, getUsers, getAllUsers };

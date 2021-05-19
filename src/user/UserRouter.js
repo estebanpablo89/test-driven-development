@@ -75,4 +75,9 @@ router.get('/api/1.0/users', pagination, async (req, res) => {
   res.send(users);
 });
 
+router.get('/api/1.0/users/all', async (req, res) => {
+  const users = await UserService.getAllUsers();
+  res.send(users);
+});
+
 module.exports = router;
